@@ -55,16 +55,43 @@ def run_crypto_pipeline(from_date, to_date, output_dir):
 
     combined_df = pd.concat(dfs, axis=1)
 
+    # ===============================
+    # Previous Hour Features
+    # ===============================
+    symbols_simple = ['BTCJPY', 'ETHJPY', 'XRPJPY', 'LTCJPY', 'BCHJPY']
+
+    for s in symbols_simple:
+        combined_df[f'{s}_PriceMoving_PreviousHour'] = (
+            (combined_df[f'{s}_close'].shift(1) - combined_df[f'{s}_open'].shift(1))
+            / combined_df[f'{s}_open'].shift(1)
+        )
+
+        combined_df[f'{s}_volumeMoving_PreviousHour'] = (
+            (combined_df[f'{s}_volume'].shift(1) - combined_df[f'{s}_volume'].shift(2))
+            / combined_df[f'{s}_volume'].shift(1)
+        )
+
+        combined_df[f'{s}_volume_prev'] = combined_df[f'{s}_volume'].shift(1)
+
+        combined_df[f'{s}_low2high_prev'] = (
+            combined_df[f'{s}_high'].shift(1) - combined_df[f'{s}_low'].shift(1)
+        ).abs()
+
     # フラグ
     threshold = 0.002
-    for s in ['BTCJPY', 'ETHJPY', 'XRPJPY', 'LTCJPY', 'BCHJPY']:
+    for s in symbols_simple:
         combined_df[f'{s}_ActionFlag_hour'] = np.where(
             combined_df[f'{s}_Performance'] >= threshold, 1,
             np.where(combined_df[f'{s}_Performance'] <= -threshold, -1, 0)
         )
 
     # 出力
-    out_path = os.path.join(output_dir, 'AllFeatures.csv')
+    start_str = from_date.strftime('%Y%m%d')
+    end_str = to_date.strftime('%Y%m%d')
+
+    filename = f'AllFeatures_{start_str}_{end_str}.csv'
+    out_path = os.path.join(output_dir, filename)
+
     combined_df.to_csv(out_path)
     return out_path
 

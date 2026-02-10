@@ -38,8 +38,8 @@ FeatureGenerator/
 ### 1. Create a virtual environment (Anaconda recommended)
 
 ```bash
-conda create -n crypto_gui python=3.10
-conda activate crypto_gui
+conda create -n Crypto_FeatureGenerator python=3.10
+conda activate Crypto_FeatureGenerator
 ```
 
 ### 2. Install dependencies
