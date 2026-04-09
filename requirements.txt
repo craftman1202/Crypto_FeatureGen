@@ -1,4 +1,4 @@
-requests
-pandas
-numpy
-pyinstaller
+requests>=2.31.0
+pandas>=1.3.5
+numpy>=1.21.6
+pyinstaller>=5.13.2
